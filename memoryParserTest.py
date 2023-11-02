@@ -5,8 +5,8 @@ from pathlib import Path
 class MemoryParserTests(unittest.TestCase):
 
     def testGetBinaryFromHex(self):
-        self.assertEquals(memoryParser.getBinaryFromHex('0x0000'), '0000000000000000')
-        self.assertEquals(memoryParser.getBinaryFromHex('0x123F'), '0001001000111111')
+        self.assertEquals(memoryParser.getBinaryFromHex('0000'), '0000000000000000')
+        self.assertEquals(memoryParser.getBinaryFromHex('123F'), '0001001000111111')
         with self.assertRaises(ValueError):
             memoryParser.getBinaryFromHex('hello')
 
