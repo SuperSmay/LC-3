@@ -8,15 +8,22 @@ def isValidBinary(input: str) -> bool:
 def binaryStringToInt(input: str) -> int:
     total = 0
     value = 1
-    for char in input[::-1]:  # Reverse string
+    isNegative = input[0] == '1'
+    for char in input[1:][::-1]:  # Reverse string excluding first character
         if char == '0':
-            pass
+            if isNegative:
+                total -= value
         elif char == '1':
-            total += value
+            if not isNegative:
+                total += value
         else:
             raise ValueError
         
         value *= 2
+
+    if input[0] == '1':
+        total -= 1
+
         
     return total
 
@@ -92,6 +99,16 @@ def sext5(input: str):
     sign = input[0]
     
     return sign*11 + input
+
+def sext6(input: str):
+    if len(input) != 6:
+        raise ValueError
+    if not isValidBinary(input):
+        raise ValueError
+    
+    sign = input[0]
+    
+    return sign*10 + input
 
 def sext9(input: str):
     if len(input) != 9:

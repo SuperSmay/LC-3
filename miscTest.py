@@ -5,8 +5,9 @@ class MiscTests(unittest.TestCase):
 
     def testBinaryStringToInt(self):
         self.assertEqual(misc.binaryStringToInt('0000'), 0)
-        self.assertEqual(misc.binaryStringToInt('1010'), 10)
-        self.assertEqual(misc.binaryStringToInt('111000111'), 455)
+        self.assertEqual(misc.binaryStringToInt('01010'), 10)
+        self.assertEqual(misc.binaryStringToInt('1010'), -6)
+        self.assertEqual(misc.binaryStringToInt('0111000111'), 455)
 
     def testBinaryFullAdder(self):
         self.assertEquals(misc.fullAdder('0011', '1100'), '1111')

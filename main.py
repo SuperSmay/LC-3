@@ -10,6 +10,10 @@ class Processor:
     instructionRegister = '0000000000000000'
     registerFile = ['0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000']
 
+    conditionP = False
+    conditionZ = False
+    conditionN = False
+
     def runToHalt(self):
         pass
 
@@ -40,7 +44,7 @@ class Processor:
 
                 result = misc.fullNotter(src)
 
-                self.registerFile[dstIndex] = result
+                self.setRegister(dstIndex, result)
                 
             case OpCode.ADD:
                 src1Index = misc.binaryStringToInt(self.instructionRegister[7:10])
@@ -56,7 +60,7 @@ class Processor:
                     src2 = self.registerFile[src2Index]
                     result = misc.fullAdder(src1, src2)
 
-                self.registerFile[dstIndex] = result
+                self.setRegister(dstIndex, result)
 
             case OpCode.AND: # Copied from above but with and instead of add
                 src1Index = misc.binaryStringToInt(self.instructionRegister[7:10])
@@ -72,24 +76,84 @@ class Processor:
                     src2 = self.registerFile[src2Index]
                     result = misc.fullAnder(src1, src2)
 
-                self.registerFile[dstIndex] = result
+                self.setRegister(dstIndex, result)
 
             case OpCode.LDR:
-                pass
+                srcIndex = misc.binaryStringToInt(self.instructionRegister[7:10])
+                dstIndex = misc.binaryStringToInt(self.instructionRegister[4:7])
+                sextOffset = misc.sext6(self.instructionRegister[10:])
+
+                src = self.registerFile[srcIndex]
+
+                memAddress = misc.fullAdder(sextOffset, src)
+
+                result = self.memory[misc.binaryStringToInt(memAddress)]
+
+                self.setRegister(dstIndex, result)
+
             case OpCode.STR:
-                pass
+                baseIndex = misc.binaryStringToInt(self.instructionRegister[7:10])
+                srcIndex = misc.binaryStringToInt(self.instructionRegister[4:7])
+                sextOffset = misc.sext6(self.instructionRegister[10:])
+
+                base = self.registerFile[baseIndex]
+                src = self.registerFile[srcIndex]
+
+                memAddress = misc.fullAdder(sextOffset, base)
+
+                self.memory[misc.binaryStringToInt(memAddress)] = src
+
+
+                
             case OpCode.LD:
-                pass
+                sextOffset = misc.sext9(self.instructionRegister[7:])
+                dstIndex = misc.binaryStringToInt(self.instructionRegister[4:7])
+                memAddress = misc.fullAdder(sextOffset, self.pc)
+                result = self.memory[misc.binaryStringToInt(memAddress)]
+
+                self.setRegister(dstIndex, result)
+
             case OpCode.ST:
-                pass
+                sextOffset = misc.sext9(self.instructionRegister[7:])
+                srcIndex = misc.binaryStringToInt(self.instructionRegister[4:7])
+                memAddress = misc.fullAdder(sextOffset, self.pc)
+                src = self.registerFile[srcIndex]
+
+                self.memory[misc.binaryStringToInt(memAddress)] = src
+
             case OpCode.LDI:
-                pass
+                sextOffset = misc.sext9(self.instructionRegister[7:])
+                dstIndex = misc.binaryStringToInt(self.instructionRegister[4:7])
+                memAddress = misc.fullAdder(sextOffset, self.pc)
+                effectiveAddress = self.memory[misc.binaryStringToInt(memAddress)]
+                result = self.memory[misc.binaryStringToInt(effectiveAddress)]
+
+                self.setRegister(dstIndex, result)
+
             case OpCode.STI:
-                pass
+                sextOffset = misc.sext9(self.instructionRegister[7:])
+                srcIndex = misc.binaryStringToInt(self.instructionRegister[4:7])
+                memAddress = misc.fullAdder(sextOffset, self.pc)
+                effectiveAddress = self.memory[misc.binaryStringToInt(memAddress)]
+
+                src = self.registerFile[srcIndex]
+
+                self.memory[misc.binaryStringToInt(effectiveAddress)] = src
+
             case OpCode.LEA:
-                pass
+                sextOffset = misc.sext9(self.instructionRegister[7:])
+                dstIndex = misc.binaryStringToInt(self.instructionRegister[4:7])
+                result = misc.fullAdder(self.pc, sextOffset)
+
+                self.setRegister(dstIndex, result)
+
             case OpCode.BR:
-                pass
+                if ((int(self.instructionRegister[4]) and self.conditionN) or
+                    (int(self.instructionRegister[5]) and self.conditionZ) or
+                    (int(self.instructionRegister[6]) and self.conditionP)):
+                    sextOffset = misc.sext9(self.instructionRegister[7:])
+                    self.pc = misc.fullAdder(self.pc, sextOffset)
+                
             case OpCode.JMP:
                 srcIndex = misc.binaryStringToInt(self.instructionRegister[7:10])
                 src = self.registerFile[srcIndex]
@@ -99,12 +163,23 @@ class Processor:
             case OpCode.TRAP:
                 pass
 
-    def NOT(self):
-        pass
+    def setRegister(self, registerIndex: int, value: str):
+        self.registerFile[registerIndex] = value
 
-    def ADD(self):
-        pass
+        intValue = misc.binaryStringToInt(value)
 
+        if intValue > 0:
+            self.conditionN = False
+            self.conditionZ = False
+            self.conditionP = True
+        elif intValue < 0:
+            self.conditionN = True
+            self.conditionZ = False
+            self.conditionP = False
+        else:
+            self.conditionN = False
+            self.conditionZ = True
+            self.conditionP = False
 
 
 
