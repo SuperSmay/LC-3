@@ -91,7 +91,11 @@ class Processor:
             case OpCode.BR:
                 pass
             case OpCode.JMP:
-                pass
+                srcIndex = misc.binaryStringToInt(self.instructionRegister[7:10])
+                src = self.registerFile[srcIndex]
+
+                self.pc = src
+
             case OpCode.TRAP:
                 pass
 
