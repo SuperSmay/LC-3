@@ -13,7 +13,13 @@ def loadFileIntoList(filePath: Path) -> list[str]:
         lines = file.readlines()
         for i in range(0, 2**16):
             if len(lines) > i:
-                currentLine = lines[i].replace('\n', '')  # Remove linebreaks
+                currentLine = lines[i]
+                # Remove comments
+                if '#' in currentLine:
+                    commentIndex = currentLine.find('#')
+                    currentLine = currentLine[:commentIndex]
+                # Remove linebreaks and spaces
+                currentLine = currentLine.replace('\n', '').replace(' ', '') 
                 loadedMemory.append(get16BitFromInput(currentLine))
             else:
                 loadedMemory.append('0000000000000000')

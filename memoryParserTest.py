@@ -20,6 +20,9 @@ class MemoryParserTests(unittest.TestCase):
         self.assertEquals(loadedList[2], '1111000011110000', "Third line is loaded from file wrong")
         self.assertEquals(loadedList[3], '0000000000000000', "Implicit zeros from blank line in file loaded incorrectly")
         self.assertEquals(loadedList[6], '1111111100000000', "Line after gaps loaded wrong")
+        self.assertEquals(loadedList[8], '1111111111111111', "Spaces removed incorrectly")
+        self.assertEquals(loadedList[9], '0000000000000000', "Comments removed incorrectly")
+        
 
 if __name__ == '__main__':
     unittest.main()
