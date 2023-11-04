@@ -1,6 +1,6 @@
 import enum
 
-class OpCodes(enum.Enum):
+class OpCode(enum.Enum):
     NOT = '1001'
     ADD = '0001'
     AND = '0101'
@@ -15,3 +15,5 @@ class OpCodes(enum.Enum):
     JMP = '1100'
     TRAP= '1111'
 
+def getOpCode(instruction: str) -> OpCode:
+    return OpCode(instruction[:4])
